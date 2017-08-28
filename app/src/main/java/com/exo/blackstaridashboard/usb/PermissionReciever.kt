@@ -13,6 +13,7 @@ import android.util.Log
 
 class PermissionReciever : BroadcastReceiver() {
 
+    //TODO: Change
     private val ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION"
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -27,7 +28,7 @@ class PermissionReciever : BroadcastReceiver() {
 
                     println("something")
                 } else {
-                    Log.d(ContentValues.TAG, "permission denied for device " + device)
+                    Log.d(ContentValues.TAG, "Permission denied for device " + device)
                 }
             }
         }

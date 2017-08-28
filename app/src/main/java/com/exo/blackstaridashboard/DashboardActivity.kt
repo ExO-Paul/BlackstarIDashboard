@@ -5,12 +5,14 @@ import android.hardware.usb.UsbManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import com.exo.blackstaridashboard.usb.AmpManager
+import com.exo.blackstaridashboard.usb.DetachReceiver
 import kotlinx.android.synthetic.main.activity_dashboard.*
 
 
 class DashboardActivity : AppCompatActivity() {
 
     val ampManager = AmpManager(this, getSystemService(Context.USB_SERVICE) as UsbManager)
+    val detachReciever = DetachReceiver(ampManager)
 
     override fun onCreate(savedInstanceState: Bundle?) {
            super.onCreate(savedInstanceState)
