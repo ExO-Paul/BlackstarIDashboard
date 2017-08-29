@@ -10,6 +10,7 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Parcelable
 import android.util.Log
+import android.widget.Toast
 
 class PermissionReciever(val ampManager: AmpManager) : BroadcastReceiver() {
 
@@ -24,7 +25,7 @@ class PermissionReciever(val ampManager: AmpManager) : BroadcastReceiver() {
 
                 if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                     ampManager.initializeConnection()
-                    println("something")
+                    Toast.makeText(ampManager.context, "Connected", Toast.LENGTH_SHORT)
                 } else {
                     Log.d(ContentValues.TAG, "Permission denied for device " + device)
                 }

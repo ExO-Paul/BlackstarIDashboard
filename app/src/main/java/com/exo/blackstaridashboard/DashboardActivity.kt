@@ -26,6 +26,8 @@ class DashboardActivity : AppCompatActivity() {
         connectButton.setOnClickListener { ampManager.connect() }
         readButton.setOnClickListener { readData() }
 
+
+        println(mapOf("name" to "field")).toString()
     }
 
     private fun fillDeviceInfo() {

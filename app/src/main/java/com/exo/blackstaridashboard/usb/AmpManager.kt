@@ -27,6 +27,8 @@ class AmpManager(val context: Context, val usbManager: UsbManager) {
 
 
     init {
+        permissionReceiver.registerReceiver(context)
+        detachReciever.registerReceiver(context)
         refresh();
     }
 
@@ -39,7 +41,7 @@ class AmpManager(val context: Context, val usbManager: UsbManager) {
         usbManager.requestPermission(amp, permissionIntent);
     }
 
-    public fun initializeConnection() {
+    fun initializeConnection() {
         interruptInterface = amp!!.getInterface(0)
         val endpoints = IntRange(0, interruptInterface.endpointCount - 1)
                 .map { interruptInterface.getEndpoint(it) }
@@ -48,6 +50,7 @@ class AmpManager(val context: Context, val usbManager: UsbManager) {
         connection = usbManager.openDevice(amp)
         connection.claimInterface(interruptInterface, forceClaim)
 
+//        drain()
 
         val data = ByteArray(64)
         data[0] = 0x81.toByte()
@@ -67,19 +70,31 @@ class AmpManager(val context: Context, val usbManager: UsbManager) {
         return connection.bulkTransfer(outEndpoint, bytes, bytes.size, TIMEOUT) //do in another thread
     }
 
-    fun transferInData() {
+    fun transferInData(): Map<String, Any> {
         val buffer = ByteArray(64)
         connection.bulkTransfer(inEndpoint, buffer, buffer.size, TIMEOUT) //do in another thread
 
-        println(buffer)
+        println("BUFFER: " + buffer)
 
-        resolveDataPacket(buffer)
+        val dataPacket = resolveDataPacket(buffer)
+
+        println(dataPacket.toString())
+
+        return dataPacket
     }
 
     fun printAmpInfo(): String = amp.toString()
 
     private fun resolveDataPacket(packet: ByteArray): Map<String, Any> {
         return Header.findHandler(packet)(packet)
+    }
+
+    private fun drain() {
+        val buffer = ByteArray(64)
+        do {
+            val dataRead = connection.bulkTransfer(inEndpoint, buffer, buffer.size, TIMEOUT) //do in another thread
+            println("DRAINED: " + buffer)
+        } while (dataRead > 0)
     }
 
     enum class Header(val byte0: Byte?,
@@ -158,7 +173,7 @@ class AmpManager(val context: Context, val usbManager: UsbManager) {
         }),
 
         CONTROL_CHANGE_ALL(0x03, byte3 = 0x2a, handler = { packet ->
-            println("All controls info packet received\n'")
+            println("All controls info packet received\n")
             Control.values()
                     .filter { it != Control.DELAY_TIME_COARSE }
                     .zip(0..Control.values().size - 1)
@@ -175,7 +190,7 @@ class AmpManager(val context: Context, val usbManager: UsbManager) {
         }),
 
         STARTUP(0x07, handler = { packet ->
-            println("Unhandled startup packet received\n'")
+            println("Unhandled startup packet received\n")
             mapOf()
         }),
 
