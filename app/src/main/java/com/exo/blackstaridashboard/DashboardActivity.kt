@@ -6,23 +6,25 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import com.exo.blackstaridashboard.usb.AmpManager
 import com.exo.blackstaridashboard.usb.DetachReceiver
+import com.exo.blackstaridashboard.usb.PermissionReciever
 import kotlinx.android.synthetic.main.activity_dashboard.*
 
 
 class DashboardActivity : AppCompatActivity() {
 
-    val ampManager = AmpManager(this, getSystemService(Context.USB_SERVICE) as UsbManager)
-    val detachReciever = DetachReceiver(ampManager)
+    lateinit var ampManager: AmpManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
-           super.onCreate(savedInstanceState)
-           setContentView(R.layout.activity_dashboard)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_dashboard)
 
+        ampManager = AmpManager(this, getSystemService(Context.USB_SERVICE) as UsbManager)
 
         fillDeviceInfo()
 
         getInfoButton.setOnClickListener { fillDeviceInfo() }
         connectButton.setOnClickListener { ampManager.connect() }
+        readButton.setOnClickListener { readData() }
 
     }
 
@@ -31,8 +33,8 @@ class DashboardActivity : AppCompatActivity() {
         textSpace.text = ampManager.printAmpInfo()
     }
 
-    private fun connect() {
-        ampManager.connect()
+    private fun readData() {
+        textSpace.text = ampManager.transferInData().toString()
     }
 }
 

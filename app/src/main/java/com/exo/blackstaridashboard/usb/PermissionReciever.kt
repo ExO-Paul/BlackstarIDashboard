@@ -11,7 +11,7 @@ import android.hardware.usb.UsbManager
 import android.os.Parcelable
 import android.util.Log
 
-class PermissionReciever : BroadcastReceiver() {
+class PermissionReciever(val ampManager: AmpManager) : BroadcastReceiver() {
 
     //TODO: Change
     private val ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION"
@@ -23,9 +23,7 @@ class PermissionReciever : BroadcastReceiver() {
                 val device = intent.getParcelableExtra<Parcelable>(UsbManager.EXTRA_DEVICE) as UsbDevice
 
                 if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-
-                    //Place for code
-
+                    ampManager.initializeConnection()
                     println("something")
                 } else {
                     Log.d(ContentValues.TAG, "Permission denied for device " + device)
